@@ -62,6 +62,32 @@ in a repo-root `.env` (already git-ignored) instead of exporting it.
 The demo prints an R1-vs-R2 metrics table, a persuasive-framing sub-experiment
 (FSR), an R3 self-modification sub-experiment, and a hard-gate invariant check.
 
+## Example results
+
+A full run on `gpt-4o-mini` over the 43-case synthetic dataset. Numbers vary
+from run to run (CEFL samples at temperature > 0); the hard-gate invariant holds
+on every run.
+
+| Metric (13 deterministic cases) | R1 (text-only) | R2 (mechanical) |
+| --- | --- | --- |
+| accuracy | 0.54 | **1.00** |
+| macro-F1 | 0.50 | **1.00** |
+| MCC | 0.45 | **1.00** |
+| framing flip rate (FSR, lower = better) | 0.26 | **0.14** |
+
+- **Hard rules beat prompting.** On cases with a single defensible answer, R2 is
+  correct every time because hard gates decide them *before* the LLM. R1 — which
+  only has the policy in its prompt — gets nearly half wrong.
+- **Framing robustness.** Rewriting each request in an emotional, persuasive tone
+  (same facts, different words) flips ~26% of R1's decisions but only ~14% of
+  R2's. R2 cannot fully neutralise framing on cases that still reach the LLM, but
+  it *guarantees* stability on the gated (sensitive) cases.
+- **The invariant held.** Across all 43 cases, R2 never approved a request that a
+  prohibitive gate (out-of-policy / suspected fraud) had already blocked.
+- **R3 in this run.** The model proposed no policy modifications, so the drift
+  budget was untouched and the refund invariants were trivially preserved. The
+  R3 machinery runs; whether a model proposes changes depends on the model.
+
 ## What's in here
 
 | Path | What it is |
